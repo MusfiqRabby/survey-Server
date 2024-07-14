@@ -12,7 +12,6 @@ app.use(
     cors({
         origin: [
             "http://localhost:5173",
-            "https://surveysky.netlify.app",
             "https://surveysky-c627d.web.app",
         ]
     })
@@ -242,13 +241,6 @@ async function run() {
       const resultPayment = await paymentsCollection.insertOne(payments)
       res.send(resultPayment)
     })
-
-
-
-
-
-
-
 
 
 
