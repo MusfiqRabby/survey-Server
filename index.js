@@ -42,6 +42,28 @@ async function run() {
     const paymentsCollection = client.db('surveySky').collection('payments')
 
 
+    // for jwt token
+
+    // token verify 
+    const verifyToken = (req, res, next) => {
+      if (!req.headers.authorization) {
+        return res.status(401).send({ message: 'Unauthorized access' })
+      }
+      const token = req.headers.authorization.split(' ')[1]
+      jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+        if (err) {
+          return res.status(401).send({ message: 'Unauthorized access' })
+        }
+        req.decoded = decoded
+        next()
+      })
+    }
+
+    app.post('/jwt', async (req, res) => {
+      const user = req.body
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '7d' });
+      res.send({ token })
+    })
 
 
     // for survey operation 
