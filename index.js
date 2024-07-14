@@ -66,7 +66,19 @@ async function run() {
     })
 
 
-    
+    // for survey operation 
+    app.get('/survey', async (req, res) => {
+      const cursor = surveyCollections.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.get('/survey/:id', async(req, res)=>{
+      const id = req.params.id
+      const query = { _id : new ObjectId(id)}
+      const result = await surveyCollections.findOne(query)
+      res.send(result)
+    })
 
     app.post('/survey',  async (req, res) => {
       const surveyItem = req.body
@@ -88,30 +100,7 @@ async function run() {
       res.send(result)
     })
 
-    app.patch('/surveys/:id', async (req, res) => {
-      const item = req.body;
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id) }
-      const updatedDoc = {
-        $set: {
-          title: item.name,
-          category: item.category,
-          ccreated_at: item.ccreated_at,
-          description: item.description,
-          image: item.image,
-        }
-      }
-
-      const result = await surveyCollections.updateOne(filter, updatedDoc)
-      res.send(result);
-    })
-
-    app.delete('/survey/:id', async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id)}
-      const result = await surveyCollections.deleteOne(query)
-      res.send(result)
-    })
+    
 
     // for comments 
     app.get('/comments', async (req, res) => {
