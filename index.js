@@ -66,19 +66,7 @@ async function run() {
     })
 
 
-    // for survey operation 
-    app.get('/survey', async (req, res) => {
-      const cursor = surveyCollections.find()
-      const result = await cursor.toArray()
-      res.send(result)
-    })
-
-    app.get('/survey/:id', async(req, res)=>{
-      const id = req.params.id
-      const query = { _id : new ObjectId(id)}
-      const result = await surveyCollections.findOne(query)
-      res.send(result)
-    })
+    
 
     app.post('/survey',  async (req, res) => {
       const surveyItem = req.body
