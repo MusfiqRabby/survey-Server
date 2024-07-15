@@ -138,22 +138,25 @@ async function run() {
       res.send(result)
     })
 
-
-
-    app.get('/users/admin/:email', verifyToken, async (req, res) => {
-      const email = req.params.email
-      // problem 1  solve
-      if (email !== req.decoded.email) {
-        return res.status(403).send({ message: 'forbideen access' })
+    // for users operation 
+    app.post('/users', async(req, res)=>{
+      const userInfo = req.body
+      const query = {email : userInfo.email}
+      const isExsisting = await usersCollections.findOne(query)
+      if(isExsisting){
+        return res.send({ message: 'already email exists', insertedId: null })
       }
-      const query = { email: email }
-      const user = await usersCollections.findOne(query)
-      let admin = false
-      if (user) {
-        admin = user?.role === 'admin'
-      }
-      res.send({ admin })
+      const result = await usersCollections.insertOne(userInfo)
+      res.send(result)
     })
+
+    app.get('/users', verifyToken, async(req, res)=>{
+      const cursor = usersCollections.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    
 
     app.patch('/users/admin/:id', async (req, res) => {
       const id = req.params.id
