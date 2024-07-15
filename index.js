@@ -204,19 +204,33 @@ async function run() {
     })
 
 
-   
+    // paymnet 
+    app.post('/create-payment-intent', async(req, res)=>{
+      const {price} = req.body
+      const amount = parseInt(price * 100)
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ["card"],
+      })
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      })
+    })
 
-    app.get('/payments', async(req, res)=>{
+
+    app.get('/payments/:email', verifyToken, async (req, res) => {
+      const email = req.params.email
+      // problem 1  solve
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: 'forbideen access' })
+      }
       const cursor = paymentsCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.post('/payments', async(req, res)=>{
-      const payments = req.body
-      const resultPayment = await paymentsCollection.insertOne(payments)
-      res.send(resultPayment)
-    })
+    
 
 
 
