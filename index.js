@@ -86,21 +86,7 @@ async function run() {
       res.send(result)
     })
 
-    app.patch('/survey/:id', async(req,res) =>{
-      const id = req.params.id
-      const query = { _id : new ObjectId(id)}
-      const options = { upsert: true };
-      const findeone = await surveyCollections.findOne(query)
-      const updateVote = {
-        $set:{
-          votes : findeone.votes + 1
-        }
-      }
-      const result = await surveyCollections.updateOne(query, updateVote, options)
-      res.send(result)
-    })
-
-    
+   
 
     // for comments 
     app.get('/comments', async (req, res) => {
