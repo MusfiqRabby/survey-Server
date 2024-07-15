@@ -118,53 +118,13 @@ async function run() {
       res.send(result);
     })
 
+    app.delete('/survey/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)}
+      const result = await surveyCollections.deleteOne(query)
+      res.send(result)
+    })
     
-
-    // for users operation 
-    app.post('/users', async(req, res)=>{
-      const userInfo = req.body
-      const query = {email : userInfo.email}
-      const isExsisting = await usersCollections.findOne(query)
-      if(isExsisting){
-        return res.send({ message: 'already email exists', insertedId: null })
-      }
-      const result = await usersCollections.insertOne(userInfo)
-      res.send(result)
-    })
-
-    app.get('/users', verifyToken, async(req, res)=>{
-      const cursor = usersCollections.find()
-      const result = await cursor.toArray()
-      res.send(result)
-    })
-
-    app.get('/users/admin/:email', verifyToken, async (req, res) => {
-      const email = req.params.email
-      // problem 1  solve
-      if (email !== req.decoded.email) {
-        return res.status(403).send({ message: 'forbideen access' })
-      }
-      const query = { email: email }
-      const user = await usersCollections.findOne(query)
-      let admin = false
-      if (user) {
-        admin = user?.role === 'admin'
-      }
-      res.send({ admin })
-    })
-
-    app.patch('/users/admin/:id', async (req, res) => {
-      const id = req.params.id
-      const filter = { _id: new ObjectId(id) }
-      const updateDoc = {
-        $set: {
-          role: 'admin'
-        }
-      }
-      const result = await usersCollections.updateOne(filter, updateDoc)
-      res.send(result)
-    })
-
     app.patch('/users/:email', async(req, res)=>{
       const email = req.params.email
       const filter = { email : email}
