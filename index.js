@@ -86,20 +86,39 @@ async function run() {
       res.send(result)
     })
 
-   
-
-    // for comments 
-    app.get('/comments', async (req, res) => {
-      const cursor = commentsCollections.find()
-      const result = await cursor.toArray()
+    app.patch('/survey/:id', async(req,res) =>{
+      const id = req.params.id
+      const query = { _id : new ObjectId(id)}
+      const options = { upsert: true };
+      const findeone = await surveyCollections.findOne(query)
+      const updateVote = {
+        $set:{
+          votes : findeone.votes + 1
+        }
+      }
+      const result = await surveyCollections.updateOne(query, updateVote, options)
       res.send(result)
     })
 
-    app.post('/comments', async(req, res)=>{
-      const userCoInfo = req.body
-      const result = await commentsCollections.insertOne(userCoInfo)
-      res.send(result)
+    app.patch('/surveys/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const updatedDoc = {
+        $set: {
+          title: item.name,
+          category: item.category,
+          ccreated_at: item.ccreated_at,
+          description: item.description,
+          image: item.image,
+        }
+      }
+
+      const result = await surveyCollections.updateOne(filter, updatedDoc)
+      res.send(result);
     })
+
+    
 
     // for users operation 
     app.post('/users', async(req, res)=>{
