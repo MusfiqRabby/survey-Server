@@ -124,7 +124,49 @@ async function run() {
       const result = await surveyCollections.deleteOne(query)
       res.send(result)
     })
-    
+
+    // for comments 
+    app.get('/comments', async (req, res) => {
+      const cursor = commentsCollections.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.post('/comments', async(req, res)=>{
+      const userCoInfo = req.body
+      const result = await commentsCollections.insertOne(userCoInfo)
+      res.send(result)
+    })
+
+
+
+    app.get('/users/admin/:email', verifyToken, async (req, res) => {
+      const email = req.params.email
+      // problem 1  solve
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: 'forbideen access' })
+      }
+      const query = { email: email }
+      const user = await usersCollections.findOne(query)
+      let admin = false
+      if (user) {
+        admin = user?.role === 'admin'
+      }
+      res.send({ admin })
+    })
+
+    app.patch('/users/admin/:id', async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const updateDoc = {
+        $set: {
+          role: 'admin'
+        }
+      }
+      const result = await usersCollections.updateOne(filter, updateDoc)
+      res.send(result)
+    })
+
     app.patch('/users/:email', async(req, res)=>{
       const email = req.params.email
       const filter = { email : email}
